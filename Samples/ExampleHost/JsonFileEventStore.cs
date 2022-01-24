@@ -30,7 +30,7 @@ namespace LiquidProjections.ExampleHost
         public IDisposable Subscribe(long? lastProcessedCheckpoint, Subscriber subscriber, string subscriptionId)
         {
             var subscription = new Subscription(lastProcessedCheckpoint ?? 0, subscriber);
-            
+
             Task.Run(async () =>
             {
                 Task<Transaction[]> loader = LoadNextPageAsync();
@@ -68,7 +68,7 @@ namespace LiquidProjections.ExampleHost
                         object @event = JsonConvert.DeserializeObject(json, new JsonSerializerSettings
                         {
                             TypeNameHandling = TypeNameHandling.All,
-                            TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
+                            TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
                         });
 
                         string streamId = ExtractStreamIdFrom(@event);
@@ -86,7 +86,7 @@ namespace LiquidProjections.ExampleHost
                                 StreamId = streamId,
                                 Checkpoint = lastCheckpoint++
                             };
-                            
+
                             transactions.Add(transaction);
                         }
 
@@ -99,10 +99,10 @@ namespace LiquidProjections.ExampleHost
                 while ((json != null) && (transactions.Count < pageSize));
 
                 Console.WriteLine(
-                    $"Loaded page of {transactions.Count} transactions " + 
+                    $"Loaded page of {transactions.Count} transactions " +
                     $"(checkpoint {transactions.First().Checkpoint}-{transactions.Last().Checkpoint}) " +
                     $"with {transactions.Sum(t => t.Events.Count)} events");
-                
+
                 return transactions.ToArray();
             });
         }
@@ -117,7 +117,7 @@ namespace LiquidProjections.ExampleHost
             return property.GetValue(@event, null).ToString();
         }
 
-        private StreamReader CurrentReader => 
+        private StreamReader CurrentReader =>
             currentReader ?? (currentReader = new StreamReader(entryQueue.Dequeue().Open()));
 
         public void Dispose()

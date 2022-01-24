@@ -1,49 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Web.Http;
-using System.Web.Http.Dispatcher;
-using NHibernate;
-using Owin;
-using TinyIoC;
+﻿// TODO : UPGRADE
 
-namespace LiquidProjections.ExampleHost
-{
-    internal static class AppBuilderExtensions
-    {
-        internal static IAppBuilder UseStatisticsApi(this IAppBuilder app, Func<ISession> sessionFactory)
-        {            
-            var container = TinyIoCContainer.Current;
-            container.Register<Func<ISession>>(sessionFactory);
-            HttpConfiguration httpConfiguration = BuildHttpConfiguration(container);
+//using System;
+//using System.Collections.Generic;
+//using System.Web.Http;
+//using System.Web.Http.Dispatcher;
+//using NHibernate;
+//using Owin;
+//using TinyIoC;
 
-            app.Map("/api", a => a.UseWebApi(httpConfiguration));
+//namespace LiquidProjections.ExampleHost
+//{
+//    internal static class AppBuilderExtensions
+//    {
+//        internal static IAppBuilder UseStatisticsApi(this IAppBuilder app, Func<ISession> sessionFactory)
+//        {
+//            var container = TinyIoCContainer.Current;
+//            container.Register<Func<ISession>>(sessionFactory);
+//            HttpConfiguration httpConfiguration = BuildHttpConfiguration(container);
 
-            return app;
-        }
+//            app.Map("/api", a => a.UseWebApi(httpConfiguration));
 
-        private static HttpConfiguration BuildHttpConfiguration(TinyIoCContainer container)
-        {
-            var configuration = new HttpConfiguration
-            {
-                DependencyResolver = new TinyIocWebApiDependencyResolver(container),
-                IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always
-            };
+//            return app;
+//        }
 
-            configuration.Services.Replace(typeof(IHttpControllerTypeResolver), new ControllerTypeResolver());
-            configuration.MapHttpAttributeRoutes();
+//        private static HttpConfiguration BuildHttpConfiguration(TinyIoCContainer container)
+//        {
+//            var configuration = new HttpConfiguration
+//            {
+//                DependencyResolver = new TinyIocWebApiDependencyResolver(container),
+//                IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always
+//            };
 
-            return configuration;
-        }
+//            configuration.Services.Replace(typeof(IHttpControllerTypeResolver), new ControllerTypeResolver());
+//            configuration.MapHttpAttributeRoutes();
 
-        private class ControllerTypeResolver : IHttpControllerTypeResolver
-        {
-            public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
-            {
-                return new List<Type>
-                {
-                    typeof(StatisticsController)
-                };
-            }
-        }
-    }
-}
+//            return configuration;
+//        }
+
+//        private class ControllerTypeResolver : IHttpControllerTypeResolver
+//        {
+//            public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
+//            {
+//                return new List<Type>
+//                {
+//                    typeof(StatisticsController)
+//                };
+//            }
+//        }
+//    }
+//}

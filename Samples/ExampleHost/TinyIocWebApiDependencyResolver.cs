@@ -1,89 +1,91 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http.Dependencies;
-using TinyIoC;
+﻿// TODO : UPGRADE
 
-namespace LiquidProjections.ExampleHost
-{
-    internal class TinyIocWebApiDependencyResolver : IDependencyResolver
-    {
-        private bool disposed;
-        private readonly TinyIoCContainer container;
+//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Web.Http.Dependencies;
+//using TinyIoC;
 
-        public TinyIocWebApiDependencyResolver(TinyIoCContainer container)
-        {
-            if (container == null)
-            {
-                throw new ArgumentNullException("container");
-            }
+//namespace LiquidProjections.ExampleHost
+//{
+//    internal class TinyIocWebApiDependencyResolver : IDependencyResolver
+//    {
+//        private bool disposed;
+//        private readonly TinyIoCContainer container;
 
-            this.container = container;
-        }
+//        public TinyIocWebApiDependencyResolver(TinyIoCContainer container)
+//        {
+//            if (container == null)
+//            {
+//                throw new ArgumentNullException("container");
+//            }
 
-        public IDependencyScope BeginScope()
-        {
-            if (disposed)
-            {
-                throw new ObjectDisposedException("this", "This scope has already been disposed.");
-            }
+//            this.container = container;
+//        }
 
-            return new TinyIocWebApiDependencyResolver(container.GetChildContainer());
-        }
+//        public IDependencyScope BeginScope()
+//        {
+//            if (disposed)
+//            {
+//                throw new ObjectDisposedException("this", "This scope has already been disposed.");
+//            }
 
-        public object GetService(Type serviceType)
-        {
-            if (disposed)
-            {
-                throw new ObjectDisposedException("this", "This scope has already been disposed.");
-            }
+//            return new TinyIocWebApiDependencyResolver(container.GetChildContainer());
+//        }
 
-            try
-            {
-                return container.Resolve(serviceType);
-            }
-            catch (TinyIoCResolutionException)
-            {
-                return null;
-            }
-        }
+//        public object GetService(Type serviceType)
+//        {
+//            if (disposed)
+//            {
+//                throw new ObjectDisposedException("this", "This scope has already been disposed.");
+//            }
 
-        public IEnumerable<object> GetServices(Type serviceType)
-        {
-            if (disposed)
-            {
-                throw new ObjectDisposedException("this", "This scope has already been disposed.");
-            }
+//            try
+//            {
+//                return container.Resolve(serviceType);
+//            }
+//            catch (TinyIoCResolutionException)
+//            {
+//                return null;
+//            }
+//        }
 
-            try
-            {
-                return container.ResolveAll(serviceType);
-            }
-            catch (TinyIoCResolutionException)
-            {
-                return Enumerable.Empty<object>();
-            }
-        }
+//        public IEnumerable<object> GetServices(Type serviceType)
+//        {
+//            if (disposed)
+//            {
+//                throw new ObjectDisposedException("this", "This scope has already been disposed.");
+//            }
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+//            try
+//            {
+//                return container.ResolveAll(serviceType);
+//            }
+//            catch (TinyIoCResolutionException)
+//            {
+//                return Enumerable.Empty<object>();
+//            }
+//        }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposed)
-            {
-                return;
-            }
+//        public void Dispose()
+//        {
+//            Dispose(true);
+//            GC.SuppressFinalize(this);
+//        }
 
-            if (disposing)
-            {
-                container.Dispose();
-            }
+//        protected virtual void Dispose(bool disposing)
+//        {
+//            if (disposed)
+//            {
+//                return;
+//            }
 
-            disposed = true;
-        }
-    }
-}
+//            if (disposing)
+//            {
+//                container.Dispose();
+//            }
+
+//            disposed = true;
+//        }
+//    }
+//}

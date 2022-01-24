@@ -210,3 +210,154 @@ System.Data.SQLite.Core, Version=1.0.115.5
 2022-01-24 15:30:13.024 +10:00 [INF] Upgrade step Finalize upgrade applied successfully
 2022-01-24 15:30:14.735 +10:00 [INF] Upgrade has completed. Please review any changes.
 2022-01-24 15:30:14.737 +10:00 [INF] Saving upgrade progress file at E:\Git\LiquidProjections.NHibernate\.upgrade-assistant
+2022-01-24 16:01:28.114 +10:00 [INF] MSBuild registered from C:\Program Files\dotnet\sdk\5.0.404\
+2022-01-24 16:01:28.341 +10:00 [INF] Registered 1 extensions:
+	Default extension
+2022-01-24 16:01:32.698 +10:00 [INF] Initializing upgrade step Select an entrypoint
+2022-01-24 16:01:32.703 +10:00 [INF] Setting entrypoint to user selected project: E:\Git\LiquidProjections.NHibernate\Tests\LiquidProjections.NHibernate.Specs\LiquidProjections.NHibernate.Specs.csproj
+2022-01-24 16:01:32.715 +10:00 [INF] Initializing upgrade step Select project to upgrade
+2022-01-24 16:01:32.919 +10:00 [INF] Initializing upgrade step Back up project
+2022-01-24 16:01:37.074 +10:00 [INF] Skipping upgrade step Back up project
+2022-01-24 16:01:37.075 +10:00 [INF] Upgrade step Back up project skipped
+2022-01-24 16:01:38.875 +10:00 [INF] Initializing upgrade step Convert project file to SDK style
+2022-01-24 16:01:41.234 +10:00 [INF] Applying upgrade step Convert project file to SDK style
+2022-01-24 16:01:41.238 +10:00 [INF] Converting project file format with try-convert, version 0.7.217901
+2022-01-24 16:01:43.439 +10:00 [INF] [try-convert] Microsoft.Build.Exceptions.InvalidProjectFileException: SDK Resolver Failure: "The SDK resolver "Microsoft.DotNet.MSBuildSdkResolver" failed while attempting to resolve the SDK "Microsoft.NET.Sdk". Exception: "System.IO.FileLoadException: Could not load file or assembly 'Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed'. Could not find or load a specific file. (0x80131621)
+2022-01-24 16:01:43.444 +10:00 [INF] [try-convert] File name: 'Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed'
+2022-01-24 16:01:43.448 +10:00 [INF] [try-convert]  ---> System.IO.FileLoadException: Could not load file or assembly 'Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed'.
+2022-01-24 16:01:43.452 +10:00 [INF] [try-convert]    at System.Runtime.Loader.AssemblyLoadContext.LoadFromPath(IntPtr ptrNativeAssemblyLoadContext, String ilPath, String niPath, ObjectHandleOnStack retAssembly)
+2022-01-24 16:01:43.454 +10:00 [INF] [try-convert]    at System.Runtime.Loader.AssemblyLoadContext.LoadFromAssemblyPath(String assemblyPath)
+2022-01-24 16:01:43.455 +10:00 [INF] [try-convert]    at System.Reflection.Assembly.LoadFrom(String assemblyFile)
+2022-01-24 16:01:43.457 +10:00 [INF] [try-convert]    at System.Reflection.Assembly.LoadFromResolveHandler(Object sender, ResolveEventArgs args)
+2022-01-24 16:01:43.459 +10:00 [INF] [try-convert]    at System.Runtime.Loader.AssemblyLoadContext.InvokeResolveEvent(ResolveEventHandler eventHandler, RuntimeAssembly assembly, String name)
+2022-01-24 16:01:43.461 +10:00 [INF] [try-convert]    at System.Runtime.Loader.AssemblyLoadContext.OnAssemblyResolve(RuntimeAssembly assembly, String assemblyFullName)
+2022-01-24 16:01:43.462 +10:00 [INF] [try-convert]    at Microsoft.NET.Sdk.WorkloadManifestReader.WorkloadManifestReader.ReadWorkloadManifest(String manifestId, Stream manifestStream, Stream localizationStream, String informationalPath)
+2022-01-24 16:01:43.464 +10:00 [INF] [try-convert]    at Microsoft.NET.Sdk.WorkloadManifestReader.WorkloadResolver.LoadManifestsFromProvider(IWorkloadManifestProvider manifestProvider)
+2022-01-24 16:01:43.466 +10:00 [INF] [try-convert]    at Microsoft.NET.Sdk.WorkloadManifestReader.WorkloadResolver..ctor(IWorkloadManifestProvider manifestProvider, ValueTuple`2[] dotnetRootPaths, String[] currentRuntimeIdentifiers)
+2022-01-24 16:01:43.470 +10:00 [INF] [try-convert]    at Microsoft.NET.Sdk.WorkloadManifestReader.WorkloadResolver.Create(IWorkloadManifestProvider manifestProvider, String dotnetRootPath, String sdkVersion, String userProfileDir)
+2022-01-24 16:01:43.472 +10:00 [INF] [try-convert]    at Microsoft.NET.Sdk.WorkloadMSBuildSdkResolver.CachingWorkloadResolver.Resolve(String sdkReferenceName, String dotnetRootPath, String sdkVersion, String userProfileDir)
+2022-01-24 16:01:43.474 +10:00 [INF] [try-convert]    at Microsoft.DotNet.MSBuildSdkResolver.DotNetMSBuildSdkResolver.Resolve(SdkReference sdkReference, SdkResolverContext context, SdkResultFactory factory)
+2022-01-24 16:01:43.475 +10:00 [INF] [try-convert]    at Microsoft.Build.BackEnd.SdkResolution.SdkResolverService.ResolveSdk(Int32 submissionId, SdkReference sdk, LoggingContext loggingContext, ElementLocation sdkReferenceLocation, String solutionPath, String projectPath, Boolean interactive, Boolean isRunningInVisualStudio)""  E:\Git\LiquidProjections.NHibernate\Tests\LiquidProjections.NHibernate.Specs\LiquidProjections.NHibernate.Specs.csproj
+2022-01-24 16:01:43.477 +10:00 [INF] [try-convert]    at Microsoft.Build.Shared.ProjectErrorUtilities.ThrowInvalidProject(String errorSubCategoryResourceName, IElementLocation elementLocation, String resourceName, Object[] args)
+2022-01-24 16:01:43.479 +10:00 [INF] [try-convert]    at Microsoft.Build.Shared.ProjectErrorUtilities.VerifyThrowInvalidProject[T1](Boolean condition, String errorSubCategoryResourceName, IElementLocation elementLocation, String resourceName, T1 arg0)
+2022-01-24 16:01:43.483 +10:00 [INF] [try-convert]    at Microsoft.Build.Shared.ProjectErrorUtilities.ThrowInvalidProject[T1](IElementLocation elementLocation, String resourceName, T1 arg0)
+2022-01-24 16:01:43.485 +10:00 [INF] [try-convert]    at Microsoft.Build.Evaluation.Evaluator`4.ExpandAndLoadImportsFromUnescapedImportExpressionConditioned(String directoryOfImportingFile, ProjectImportElement importElement, List`1& projects, SdkResult& sdkResult, Boolean throwOnFileNotExistsError)
+2022-01-24 16:01:43.486 +10:00 [INF] [try-convert]    at Microsoft.Build.Evaluation.Evaluator`4.ExpandAndLoadImports(String directoryOfImportingFile, ProjectImportElement importElement, SdkResult& sdkResult)
+2022-01-24 16:01:43.488 +10:00 [INF] [try-convert]    at Microsoft.Build.Evaluation.Evaluator`4.EvaluateImportElement(String directoryOfImportingFile, ProjectImportElement importElement)
+2022-01-24 16:01:43.489 +10:00 [INF] [try-convert]    at Microsoft.Build.Evaluation.Evaluator`4.PerformDepthFirstPass(ProjectRootElement currentProjectOrImport)
+2022-01-24 16:01:43.490 +10:00 [ERR] [try-convert] Exited with non-success code: -1
+2022-01-24 16:01:43.490 +10:00 [INF] [try-convert]    at Microsoft.Build.Evaluation.Evaluator`4.Evaluate()
+2022-01-24 16:01:43.820 +10:00 [FTL] Conversion with try-convert failed.
+2022-01-24 16:01:45.254 +10:00 [WRN] Upgrade step Convert project file to SDK style failed: "Failed": Conversion with try-convert failed.
+2022-01-24 16:01:51.509 +10:00 [INF] Saving upgrade progress file at E:\Git\LiquidProjections.NHibernate\Tests\LiquidProjections.NHibernate.Specs\.upgrade-assistant
+2022-01-24 16:03:13.871 +10:00 [INF] MSBuild registered from C:\Program Files\dotnet\sdk\5.0.404\
+2022-01-24 16:03:13.900 +10:00 [INF] Registered 1 extensions:
+	Default extension
+2022-01-24 16:03:16.332 +10:00 [INF] Loading upgrade progress file at E:\Git\LiquidProjections.NHibernate\Tests\LiquidProjections.NHibernate.Specs\.upgrade-assistant
+2022-01-24 16:03:16.422 +10:00 [INF] Initializing upgrade step Back up project
+2022-01-24 16:03:20.562 +10:00 [INF] Skipping upgrade step Back up project
+2022-01-24 16:03:20.563 +10:00 [INF] Upgrade step Back up project skipped
+2022-01-24 16:03:22.255 +10:00 [INF] Initializing upgrade step Convert project file to SDK style
+2022-01-24 16:03:22.258 +10:00 [INF] Initializing upgrade step Clean up NuGet package references
+2022-01-24 16:03:24.498 +10:00 [INF] Marking package LiquidProjections.Abstractions for removal because it appears to be a transitive dependency
+2022-01-24 16:03:24.516 +10:00 [INF] Marking package System.ValueTuple for removal because it appears to be a transitive dependency
+2022-01-24 16:03:24.521 +10:00 [INF] Marking package xunit.abstractions for removal because it appears to be a transitive dependency
+2022-01-24 16:03:24.524 +10:00 [INF] Marking package xunit.assert for removal because it appears to be a transitive dependency
+2022-01-24 16:03:24.527 +10:00 [INF] Marking package xunit.core for removal because it appears to be a transitive dependency
+2022-01-24 16:03:24.534 +10:00 [INF] Marking package xunit.extensibility.core for removal because it appears to be a transitive dependency
+2022-01-24 16:03:24.540 +10:00 [INF] Marking package xunit.extensibility.execution for removal because it appears to be a transitive dependency
+2022-01-24 16:03:24.607 +10:00 [INF] Marking assembly reference System.Configuration for removal based on package mapping configuration System.Configuration
+2022-01-24 16:03:24.618 +10:00 [INF] Adding package System.Configuration.ConfigurationManager based on package mapping configuration System.Configuration
+2022-01-24 16:03:31.329 +10:00 [WRN] No version of System.ComponentModel.Composition found that supports ["net452"]; leaving unchanged
+2022-01-24 16:03:39.961 +10:00 [INF] Reference to .NET Upgrade Assistant analyzer package (Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers, version 0.3.261602) needs added
+2022-01-24 16:03:39.983 +10:00 [INF] References to be removed:
+System.Configuration
+2022-01-24 16:03:39.987 +10:00 [INF] Packages to be removed:
+LiquidProjections.Abstractions, Version=3.0.0
+System.ValueTuple, Version=4.3.0
+xunit.abstractions, Version=2.0.1
+xunit.assert, Version=2.2.0
+xunit.core, Version=2.2.0
+xunit.extensibility.core, Version=2.2.0
+xunit.extensibility.execution, Version=2.2.0
+2022-01-24 16:03:39.990 +10:00 [INF] Packages to be addded:
+System.Configuration.ConfigurationManager, Version=5.0.0
+Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers, Version=0.3.261602
+2022-01-24 16:03:46.209 +10:00 [INF] Applying upgrade step Clean up NuGet package references
+2022-01-24 16:03:46.215 +10:00 [INF] Removing outdated assembly reference: System.Configuration
+2022-01-24 16:03:46.218 +10:00 [INF] Removing outdated package reference: LiquidProjections.Abstractions, Version=3.0.0
+2022-01-24 16:03:46.219 +10:00 [INF] Removing outdated package reference: System.ValueTuple, Version=4.3.0
+2022-01-24 16:03:46.220 +10:00 [INF] Removing outdated package reference: xunit.abstractions, Version=2.0.1
+2022-01-24 16:03:46.221 +10:00 [INF] Removing outdated package reference: xunit.assert, Version=2.2.0
+2022-01-24 16:03:46.222 +10:00 [INF] Removing outdated package reference: xunit.core, Version=2.2.0
+2022-01-24 16:03:46.223 +10:00 [INF] Removing outdated package reference: xunit.extensibility.core, Version=2.2.0
+2022-01-24 16:03:46.224 +10:00 [INF] Removing outdated package reference: xunit.extensibility.execution, Version=2.2.0
+2022-01-24 16:03:46.227 +10:00 [INF] Adding package reference: System.Configuration.ConfigurationManager, Version=5.0.0
+2022-01-24 16:03:46.228 +10:00 [INF] Adding package reference: Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers, Version=0.3.261602
+2022-01-24 16:03:50.297 +10:00 [WRN] No version of System.ComponentModel.Composition found that supports ["net452"]; leaving unchanged
+2022-01-24 16:03:54.488 +10:00 [WRN] No version of System.Configuration.ConfigurationManager found that supports ["net452"]; leaving unchanged
+2022-01-24 16:03:54.542 +10:00 [INF] Upgrade step Clean up NuGet package references applied successfully
+2022-01-24 16:04:00.080 +10:00 [INF] Initializing upgrade step Update TFM
+2022-01-24 16:04:00.130 +10:00 [INF] TFM needs updated to netstandard2.0
+2022-01-24 16:04:01.467 +10:00 [INF] Applying upgrade step Update TFM
+2022-01-24 16:04:04.485 +10:00 [INF] Updated TFM to netstandard2.0
+2022-01-24 16:04:04.487 +10:00 [INF] Upgrade step Update TFM applied successfully
+2022-01-24 16:04:05.424 +10:00 [INF] Initializing upgrade step Update NuGet Packages
+2022-01-24 16:04:07.328 +10:00 [INF] Marking package Microsoft.CSharp for removal because it appears to be a transitive dependency
+2022-01-24 16:04:07.331 +10:00 [INF] Marking package System.ComponentModel.Composition for removal because it appears to be a transitive dependency
+2022-01-24 16:04:07.334 +10:00 [INF] Marking package System.Data.DataSetExtensions for removal because it appears to be a transitive dependency
+2022-01-24 16:04:07.353 +10:00 [INF] Marking package LiquidProjections for removal because it appears to be a transitive dependency
+2022-01-24 16:04:14.973 +10:00 [INF] Marking package Chill, Version=3.0.1 for removal because it doesn't support the target framework but a newer version (4.1.0) does
+2022-01-24 16:04:14.979 +10:00 [WRN] Package Chill has been upgraded across major versions (3.0.1 -> 4.1.0) which may introduce breaking changes
+2022-01-24 16:04:17.425 +10:00 [INF] Marking package FluentNHibernate, Version=2.0.3.0 for removal because it doesn't support the target framework but a newer version (2.1.2) does
+2022-01-24 16:04:19.895 +10:00 [INF] Marking package Iesi.Collections, Version=4.0.0.4000 for removal because it doesn't support the target framework but a newer version (4.0.4) does
+2022-01-24 16:04:24.962 +10:00 [INF] Marking package NHibernate, Version=4.0.4.4000 for removal because it doesn't support the target framework but a newer version (5.3.10) does
+2022-01-24 16:04:24.964 +10:00 [WRN] Package NHibernate has been upgraded across major versions (4.0.4.4000 -> 5.3.10) which may introduce breaking changes
+2022-01-24 16:04:28.443 +10:00 [INF] Marking package System.Data.SQLite.Core, Version=1.0.106.0 for removal because it doesn't support the target framework but a newer version (1.0.115.5) does
+2022-01-24 16:04:28.455 +10:00 [INF] Packages to be removed:
+Microsoft.CSharp, Version=4.7.0
+System.ComponentModel.Composition, Version=6.0.0
+System.Data.DataSetExtensions, Version=4.5.0
+LiquidProjections, Version=3.0.0
+Chill, Version=3.0.1
+FluentNHibernate, Version=2.0.3.0
+Iesi.Collections, Version=4.0.0.4000
+NHibernate, Version=4.0.4.4000
+System.Data.SQLite.Core, Version=1.0.106.0
+2022-01-24 16:04:28.456 +10:00 [INF] Packages to be addded:
+Chill, Version=4.1.0
+FluentNHibernate, Version=2.1.2
+Iesi.Collections, Version=4.0.4
+NHibernate, Version=5.3.10
+System.Data.SQLite.Core, Version=1.0.115.5
+2022-01-24 16:04:30.626 +10:00 [INF] Applying upgrade step Update NuGet Packages
+2022-01-24 16:04:30.627 +10:00 [INF] Removing outdated package reference: Microsoft.CSharp, Version=4.7.0
+2022-01-24 16:04:30.628 +10:00 [INF] Removing outdated package reference: System.ComponentModel.Composition, Version=6.0.0
+2022-01-24 16:04:30.629 +10:00 [INF] Removing outdated package reference: System.Data.DataSetExtensions, Version=4.5.0
+2022-01-24 16:04:30.630 +10:00 [INF] Removing outdated package reference: Chill, Version=3.0.1
+2022-01-24 16:04:30.631 +10:00 [INF] Removing outdated package reference: FluentNHibernate, Version=2.0.3.0
+2022-01-24 16:04:30.632 +10:00 [INF] Removing outdated package reference: Iesi.Collections, Version=4.0.0.4000
+2022-01-24 16:04:30.633 +10:00 [INF] Removing outdated package reference: LiquidProjections, Version=3.0.0
+2022-01-24 16:04:30.636 +10:00 [INF] Removing outdated package reference: NHibernate, Version=4.0.4.4000
+2022-01-24 16:04:30.637 +10:00 [INF] Removing outdated package reference: System.Data.SQLite.Core, Version=1.0.106.0
+2022-01-24 16:04:30.638 +10:00 [INF] Adding package reference: Chill, Version=4.1.0
+2022-01-24 16:04:30.639 +10:00 [INF] Adding package reference: FluentNHibernate, Version=2.1.2
+2022-01-24 16:04:30.640 +10:00 [INF] Adding package reference: Iesi.Collections, Version=4.0.4
+2022-01-24 16:04:30.641 +10:00 [INF] Adding package reference: NHibernate, Version=5.3.10
+2022-01-24 16:04:30.642 +10:00 [INF] Adding package reference: System.Data.SQLite.Core, Version=1.0.115.5
+2022-01-24 16:04:33.703 +10:00 [INF] Marking package Iesi.Collections for removal because it appears to be a transitive dependency
+2022-01-24 16:04:33.708 +10:00 [INF] Marking package NHibernate for removal because it appears to be a transitive dependency
+2022-01-24 16:04:33.756 +10:00 [INF] Removing outdated package reference: Iesi.Collections, Version=4.0.4
+2022-01-24 16:04:33.757 +10:00 [INF] Removing outdated package reference: NHibernate, Version=5.3.10
+2022-01-24 16:04:36.119 +10:00 [INF] Upgrade step Update NuGet Packages applied successfully
+2022-01-24 16:04:37.420 +10:00 [INF] Initializing upgrade step Add template files
+2022-01-24 16:04:37.469 +10:00 [INF] 0 expected template items needed
+2022-01-24 16:04:37.471 +10:00 [INF] Initializing upgrade step Update C# source
+2022-01-24 16:04:39.829 +10:00 [INF] Initializing upgrade step Move to next project
+2022-01-24 16:04:43.151 +10:00 [INF] Applying upgrade step Move to next project
+2022-01-24 16:04:43.152 +10:00 [INF] Upgrade step Move to next project applied successfully
+2022-01-24 16:04:44.465 +10:00 [INF] Initializing upgrade step Finalize upgrade
+2022-01-24 16:04:46.095 +10:00 [INF] Applying upgrade step Finalize upgrade
+2022-01-24 16:04:46.097 +10:00 [INF] Upgrade step Finalize upgrade applied successfully
+2022-01-24 16:04:47.052 +10:00 [INF] Upgrade has completed. Please review any changes.
+2022-01-24 16:04:47.054 +10:00 [INF] Saving upgrade progress file at E:\Git\LiquidProjections.NHibernate\Tests\LiquidProjections.NHibernate.Specs\.upgrade-assistant
