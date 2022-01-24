@@ -1,3 +1,5 @@
+//TODO: UPGRADE : Another FluidCaching.cs file was removed from the project root which appeared to be a link to this, causing the code to be duplicated.
+
 using System;
 using System.Threading;
 using System.Collections.Generic;
@@ -95,10 +97,10 @@ namespace FluidCaching
         public int CurrentBagIndex { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating the maximum number of items the cache should support. 
+        /// Gets a value indicating the maximum number of items the cache should support.
         /// </summary>
         /// <remarks>
-        /// The actual number of items can exceed the value of this property if certain items didn't reach the minimum 
+        /// The actual number of items can exceed the value of this property if certain items didn't reach the minimum
         /// retention time.
         /// </remarks>
         public int Capacity { get; set; }
@@ -114,13 +116,13 @@ namespace FluidCaching
         public int SinceCreation => totalCount;
 
         /// <summary>
-        /// Gets the number of times an item was requested from the cache which did not exist yet, since the cache 
+        /// Gets the number of times an item was requested from the cache which did not exist yet, since the cache
         /// was created.
         /// </summary>
         public long Misses => misses;
 
         /// <summary>
-        /// Gets the number of times an existing item was requested from the cache since the cache 
+        /// Gets the number of times an existing item was requested from the cache since the cache
         /// was created.
         /// </summary>
         public long Hits => hits;
@@ -170,7 +172,7 @@ namespace FluidCaching
         /// <filterpriority>2</filterpriority>
         public override string ToString()
         {
-            return 
+            return
                 $"{{" +
                 $"\n\tCapacity: {Capacity} \n\tCurrent: {current} \n\tTotal: {totalCount} \n\tHits: {hits} \n\tMisses: {misses}" +
                 $"\n\tOldestBagIndex: {OldestBagIndex} \n\tCurrentBagIndex: {CurrentBagIndex}" +
@@ -192,20 +194,20 @@ namespace FluidCaching
     /// FluidCache is a thread safe cache that automatically removes the items that have not been accessed for a long time.
     /// an object will never be removed if it has been accessed within the minAge timeSpan, else it will be removed if it
     /// is older than maxAge or the cache is beyond its desired size capacity.  A periodic check is made when accessing nodes that determines
-    /// if the cache is out of date, and clears the cache (allowing new objects to be loaded upon next request). 
+    /// if the cache is out of date, and clears the cache (allowing new objects to be loaded upon next request).
     /// </summary>
-    /// 
+    ///
     /// <remarks>
     /// Each Index provides dictionary key / value access to any object in cache, and has the ability to load any object that is
     /// not found. The Indexes use Weak References allowing objects in index to be garbage collected if no other objects are using them.
     /// The objects are not directly stored in indexes, rather, indexes hold Nodes which are linked list nodes. The LifespanMgr maintains
-    /// a list of Nodes in each AgeBag which hold the objects and prevents them from being garbage collected.  Any time an object is retrieved 
-    /// through a Index it is marked to belong to the current AgeBag.  When the cache gets too full/old the oldest age bag is emptied moving any 
-    /// nodes that have been touched to the correct AgeBag and removing the rest of the nodes in the bag. Once a node is removed from the 
-    /// LifespanMgr it becomes elegible for garbage collection.  The Node is not removed from the Indexes immediately.  If a Index retrieves the 
-    /// node prior to garbage collection it is reinserted into the current AgeBag's Node list.  If it has already been garbage collected a new  
-    /// object gets loaded.  If the Index size exceeds twice the capacity the index is cleared and rebuilt.  
-    /// 
+    /// a list of Nodes in each AgeBag which hold the objects and prevents them from being garbage collected.  Any time an object is retrieved
+    /// through a Index it is marked to belong to the current AgeBag.  When the cache gets too full/old the oldest age bag is emptied moving any
+    /// nodes that have been touched to the correct AgeBag and removing the rest of the nodes in the bag. Once a node is removed from the
+    /// LifespanMgr it becomes elegible for garbage collection.  The Node is not removed from the Indexes immediately.  If a Index retrieves the
+    /// node prior to garbage collection it is reinserted into the current AgeBag's Node list.  If it has already been garbage collected a new
+    /// object gets loaded.  If the Index size exceeds twice the capacity the index is cleared and rebuilt.
+    ///
     /// !!!!! THERE ARE 2 DIFFERENT LOCKS USED BY CACHE - so care is required when altering code or you may introduce deadlocks !!!!!
     ///        order of lock nesting is LifespanMgr (Monitor) / Index (ReaderWriterLock)
     /// </remarks>
@@ -257,7 +259,7 @@ namespace FluidCaching
             return index?.GetItem(key, item);
         }
 
-            /// <summary>AddAsNode a new index to the cache</summary>
+        /// <summary>AddAsNode a new index to the cache</summary>
         /// <typeparam name="TKey">the type of the key value</typeparam>
         /// <param name="indexName">the name to be associated with this list</param>
         /// <param name="getKey">delegate to get key from object</param>
@@ -594,7 +596,7 @@ namespace FluidCaching
 namespace FluidCaching
 {
     /// <summary>
-    /// Represents a method that the cache can optionally use to invalidate the entire cache based 
+    /// Represents a method that the cache can optionally use to invalidate the entire cache based
     /// on external circumstances.
     /// </summary>
 #if PUBLIC_FLUID_CACHING
@@ -628,7 +630,7 @@ namespace FluidCaching
     {
         /// <summary>
         /// The number of bags which should be enough to store the requested capacity of items. The heuristic is that each
-        /// bag should contain about 5% of the capacity. 
+        /// bag should contain about 5% of the capacity.
         /// </summary>
         private const int PreferedNrOfBags = 20;
 
@@ -723,9 +725,9 @@ namespace FluidCaching
         /// Remove old items or items beyond capacity from LifespanMgr allowing them to be garbage collected
         /// </summary>
         /// <remarks>
-        /// Since we do not physically move items when touched we must check items in bag to determine if they should 
-        /// be deleted or moved. Also items that were removed by setting value to null get removed now.  Rremoving 
-        /// an item from LifespanMgr allows it to be garbage collected. If removed item is retrieved by index prior 
+        /// Since we do not physically move items when touched we must check items in bag to determine if they should
+        /// be deleted or moved. Also items that were removed by setting value to null get removed now.  Rremoving
+        /// an item from LifespanMgr allows it to be garbage collected. If removed item is retrieved by index prior
         /// to GC then it will be readded to LifespanMgr.
         /// </remarks>
         private void CleanUp(DateTime now)
@@ -914,7 +916,7 @@ namespace FluidCaching
 namespace FluidCaching
 {
     /// <summary>
-    /// Represents a node in a linked list of items. 
+    /// Represents a node in a linked list of items.
     /// </summary>
     internal class Node<T> : INode<T> where T : class
     {
