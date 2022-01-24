@@ -882,7 +882,7 @@ namespace LiquidProjections.NHibernate.Specs
                             Id = "c350E",
                             Category = "Irrelevant"
                         };
-                        
+
                         session.Save(entry);
 
                         Cache.Add(entry);
@@ -1141,7 +1141,7 @@ namespace LiquidProjections.NHibernate.Specs
 
         #endregion
 
-        #region General 
+        #region General
 
         public class When_a_custom_state_key_is_set : Given_a_sqlite_projector_with_an_in_memory_event_source
         {
@@ -1226,7 +1226,7 @@ namespace LiquidProjections.NHibernate.Specs
             }
         }
 
-        public class When_the_projector_only_persists_the_state_for_dirty_batches : 
+        public class When_the_projector_only_persists_the_state_for_dirty_batches :
             Given_a_sqlite_projector_with_an_in_memory_event_source
         {
             private ProjectorState projectorStateAfterFirstBatch;
@@ -1246,7 +1246,7 @@ namespace LiquidProjections.NHibernate.Specs
                                 projectorStateAfterFirstBatch = session.Get<ProjectorState>(Subject.StateKey);
                             }
                         });
-                    
+
                     Events.Map<CategoryDiscontinuedEvent>()
                         .As((productAddedToCatalogEvent, context) =>
                         {
@@ -1271,7 +1271,7 @@ namespace LiquidProjections.NHibernate.Specs
                         new Transaction { Checkpoint = 13 },
                         new Transaction { Checkpoint = 14 }
                     };
-                    
+
                     Transaction[] secondBatchWithHandledEvents = {
                         new Transaction { Checkpoint = 15 },
                         new Transaction { Checkpoint = 16 },
@@ -1293,7 +1293,7 @@ namespace LiquidProjections.NHibernate.Specs
                         new Transaction { Checkpoint = 18 },
                         new Transaction { Checkpoint = 19 }
                     };
-                    
+
                     Transaction[] thirdBatchWithHandledEvents = {
                         new Transaction { Checkpoint = 20 },
                         new Transaction { Checkpoint = 21 },
@@ -1314,7 +1314,7 @@ namespace LiquidProjections.NHibernate.Specs
                         new Transaction { Checkpoint = 23 },
                         new Transaction { Checkpoint = 24 }
                     };
-                    
+
                     Transaction[] fourthPartialBatchWithoutHandledEvents = {
                         new Transaction { Checkpoint = 25 },
                         new Transaction { Checkpoint = 26 }
@@ -1325,7 +1325,7 @@ namespace LiquidProjections.NHibernate.Specs
                         .Concat(thirdBatchWithHandledEvents)
                         .Concat(fourthPartialBatchWithoutHandledEvents)
                         .ToArray();
-                    
+
                     return The<MemoryEventSource>().Write(transactions);
                 });
             }
@@ -1628,7 +1628,7 @@ namespace LiquidProjections.NHibernate.Specs
                         session.Flush();
                     }
 
-                    Subject.Filter = projection => !projection.Corrupted; 
+                    Subject.Filter = projection => !projection.Corrupted;
 
                     StartProjecting();
                 });
@@ -2218,7 +2218,7 @@ namespace LiquidProjections.NHibernate.Specs
                         {
                             return Task.FromResult(ExceptionResolution.RetryIndividual);
                         }
-                        else 
+                        else
                         {
                             return Task.FromResult(ExceptionResolution.Abort);
                         }
@@ -2279,7 +2279,7 @@ namespace LiquidProjections.NHibernate.Specs
                     {
                         var stopwatch = new Stopwatch();
                         stopwatch.Start();
-                        
+
                         exceptionBeingHandled.Set();
 
                         await Task.Delay(10.Seconds(), cancellationToken);
