@@ -1,21 +1,32 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <OutputType>Library</OutputType>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DocumentationFile>bin\Debug\LiquidProjections.NHibernate.XML</DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1571, 1591, 1570, 1573</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DocumentationFile>bin\Release\LiquidProjections.NHibernate.XML</DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1571, 1591, 1570, 1573</NoWarn>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="LiquidProjections" Version="3.2.0" />
-    <PackageReference Include="NHibernate" Version="5.3.12" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+		<Version>1.0.0</Version>
+		<PackageId>waywedo.$(AssemblyName)</PackageId>
+		<Authors>Nathan Keir, Dennis Doomen</Authors>
+		<Company>Way We Do</Company>
+		<Product>waywedo.$(AssemblyName)</Product>
+		<RepositoryUrl>https://github.com/waywedo/LiquidProjections.NHibernate</RepositoryUrl>
+		<Description>
+			Way We Do specific version of LiquidProjections.NHibernate.
+			Primarily modified to wrap a Transaction around each projection.
+		</Description>
+		<IsPackable>true</IsPackable>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<NoWarn>1571, 1591, 1570, 1573</NoWarn>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<NoWarn>1571, 1591, 1570, 1573</NoWarn>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="LiquidProjections" Version="3.2.0" />
+		<PackageReference Include="NHibernate" Version="5.3.12" />
+	</ItemGroup>
 </Project>
