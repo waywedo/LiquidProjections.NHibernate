@@ -5,7 +5,7 @@ namespace LiquidProjections.NHibernate
     public sealed class NHibernateProjectionContext : ProjectionContext
     {
         private bool wasHandled;
-        
+
         public ISession Session { get; set; }
 
         /// <summary>

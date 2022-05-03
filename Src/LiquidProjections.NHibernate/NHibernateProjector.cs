@@ -1,9 +1,9 @@
-  using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-  using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
-  using NHibernate;
+using NHibernate;
 
 namespace LiquidProjections.NHibernate
 {
@@ -64,7 +64,6 @@ namespace LiquidProjections.NHibernate
             }
         }
 
-
         /// <summary>
         /// The key to store the projector state as <typeparamref name="TState"/>.
         /// </summary>
@@ -84,7 +83,7 @@ namespace LiquidProjections.NHibernate
 
         /// <summary>
         /// A delegate that will be executed when projecting a batch of transactions fails
-        /// and which allows the consuming code to decide how to handle the exception. 
+        /// and which allows the consuming code to decide how to handle the exception.
         /// </summary>
         public HandleException ExceptionHandler
         {
@@ -93,7 +92,7 @@ namespace LiquidProjections.NHibernate
         }
 
         /// <summary>
-        /// Sets the behavior for when the state of the projector is persisted to the database. 
+        /// Sets the behavior for when the state of the projector is persisted to the database.
         /// </summary>
         public PersistStateBehavior PersistStateBehavior { get; set; } = PersistStateBehavior.EveryBatch;
 
@@ -101,9 +100,9 @@ namespace LiquidProjections.NHibernate
         /// Allows enriching the projector state with additional details before the updated state is written to the database.
         /// </summary>
         /// <remarks>
-        /// Is called within the scope of the NHibernate transaction that is created by <see cref="Handle"/>.
+        /// Is called within the scope of the NHibernate transaction that is created by <see cref="Handle(IReadOnlyList{Transaction}, ISession, CancellationToken)"/>.
         /// </remarks>
-        public EnrichState<TState> EnrichState { get; set; } = (state, transaction) => {};
+        public EnrichState<TState> EnrichState { get; set; } = (state, transaction) => { };
 
         /// <summary>
         /// A cache that can be used to avoid loading projections from the database.
@@ -126,32 +125,43 @@ namespace LiquidProjections.NHibernate
         /// <summary>
         /// Instructs the projector to project a collection of ordered <paramref name="transactions"/> asynchronously
         /// in batches of the configured size <see cref="BatchSize"/>. Should cancel its work
-        /// when the <paramref name="cancellationToken"/> is triggered.
+        /// when the <paramref name="ct"/> is triggered.
         /// </summary>
-        public async Task Handle(IReadOnlyList<Transaction> transactions, CancellationToken cancellationToken)
+        public Task Handle(IReadOnlyList<Transaction> transactions, CancellationToken ct = default)
+        {
+            return Handle(transactions, null, ct);
+        }
+
+        /// <summary>
+        /// Instructs the projector to project a collection of ordered <paramref name="transactions"/> asynchronously
+        /// in batches of the configured size <see cref="BatchSize"/>. Should cancel its work
+        /// when the <paramref name="ct"/> is triggered.
+        /// </summary>
+        public async Task Handle(IReadOnlyList<Transaction> transactions, ISession session = null, CancellationToken ct = default)
         {
             if (transactions == null)
             {
                 throw new ArgumentNullException(nameof(transactions));
             }
 
-            long? lastCheckpoint = GetLastCheckpoint();
+            long? lastCheckpoint = GetLastCheckpoint(session);
             IEnumerable<Batch<Transaction>> transactionBatches = transactions
                 .Where(t => (!lastCheckpoint.HasValue) || (t.Checkpoint > lastCheckpoint))
                 .InBatchesOf(BatchSize);
 
             foreach (Batch<Transaction> batch in transactionBatches)
             {
-                await ProjectUnderPolicy(batch.ToList(), batch.IsLast, cancellationToken).ConfigureAwait(false);
+                await ProjectUnderPolicy(batch.ToList(), batch.IsLast, 0, session, ct).ConfigureAwait(false);
 
-                if (cancellationToken.IsCancellationRequested)
+                if (ct.IsCancellationRequested)
                 {
                     break;
                 }
             }
         }
 
-        private async Task ProjectUnderPolicy(IList<Transaction> batch, bool isLastBatchOfPage, CancellationToken cancellationToken, int attempts = 0)
+        private async Task ProjectUnderPolicy(IList<Transaction> batch, bool isLastBatchOfPage, int attempts,
+            ISession session, CancellationToken ct)
         {
             bool individualRetry = (attempts > 0);
             bool retry = false;
@@ -160,12 +170,12 @@ namespace LiquidProjections.NHibernate
                 try
                 {
                     attempts++;
-                    await ProjectTransactionBatch(batch, isLastBatchOfPage || retry, cancellationToken).ConfigureAwait(false);
+                    await ProjectTransactionBatch(batch, isLastBatchOfPage || retry, session, ct).ConfigureAwait(false);
                     retry = false;
                 }
                 catch (ProjectionException exception)
                 {
-                    ExceptionResolution resolution = await ExceptionHandler(exception, attempts, cancellationToken).ConfigureAwait(false);
+                    ExceptionResolution resolution = await ExceptionHandler(exception, attempts, ct).ConfigureAwait(false);
                     switch (resolution)
                     {
                         case ExceptionResolution.Abort:
@@ -174,21 +184,23 @@ namespace LiquidProjections.NHibernate
                         case ExceptionResolution.Retry:
                             retry = true;
                             break;
-                        
+
                         case ExceptionResolution.RetryIndividual:
+                            retry = false;
                             if (individualRetry)
                             {
                                 throw new InvalidOperationException("You're already retrying individual transactions");
                             }
-                            
+
                             foreach (Transaction transaction in batch)
                             {
-                                await ProjectUnderPolicy(new[] {transaction}, true, cancellationToken, attempts);
+                                await ProjectUnderPolicy(new[] { transaction }, true, attempts, session, ct).ConfigureAwait(false);
                             }
 
                             break;
 
                         case ExceptionResolution.Ignore:
+                            retry = false;
                             break;
                     }
                 }
@@ -196,30 +208,31 @@ namespace LiquidProjections.NHibernate
             while (retry);
         }
 
-        private async Task ProjectTransactionBatch(IList<Transaction> batch, bool isLastBatchOfPage, CancellationToken cancellationToken)
+        private async Task ProjectTransactionBatch(IList<Transaction> batch, bool isLastBatchOfPage, ISession session, CancellationToken ct)
         {
             try
             {
-                using (ISession session = sessionFactory())
-                using (var tx = session.BeginTransaction())
+                using var sessionState = new SessionState(sessionFactory, session)
                 {
-                    bool dirty = false;
-                    foreach (Transaction transaction in batch)
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
+                    AlwaysDispose = true
+                };
 
-                        dirty |= await ProjectTransaction(transaction, session).ConfigureAwait(false);
-                    }
+                bool dirty = false;
+                foreach (Transaction transaction in batch)
+                {
+                    ct.ThrowIfCancellationRequested();
 
-                    if (isLastBatchOfPage 
-                        || PersistStateBehavior == PersistStateBehavior.EveryBatch
-                        || (dirty && PersistStateBehavior == PersistStateBehavior.DirtyBatch))
-                    {
-                        StoreLastCheckpoint(session, batch.Last());
-                    }
-
-                    tx.Commit();
+                    dirty |= await ProjectTransaction(transaction, sessionState.Session).ConfigureAwait(false);
                 }
+
+                if (isLastBatchOfPage
+                    || PersistStateBehavior == PersistStateBehavior.EveryBatch
+                    || (dirty && PersistStateBehavior == PersistStateBehavior.DirtyBatch))
+                {
+                    StoreLastCheckpoint(sessionState.Session, batch.Last());
+                }
+
+                await sessionState.Transaction.CommitAsync(ct).ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {
@@ -228,7 +241,7 @@ namespace LiquidProjections.NHibernate
             catch (ProjectionException projectionException)
             {
                 Cache.Clear();
-                
+
                 projectionException.Projector = typeof(TProjection).ToString();
                 projectionException.SetTransactionBatch(batch);
                 throw;
@@ -292,7 +305,7 @@ namespace LiquidProjections.NHibernate
             try
             {
                 TState existingState = session.Get<TState>(StateKey);
-                TState state = existingState ?? new TState {Id = StateKey};
+                TState state = existingState ?? new TState { Id = StateKey };
                 state.Checkpoint = transaction.Checkpoint;
                 state.LastUpdateUtc = DateTime.UtcNow;
 
@@ -312,12 +325,12 @@ namespace LiquidProjections.NHibernate
         /// <summary>
         /// Determines the checkpoint of the last projected transaction.
         /// </summary>
-        public long? GetLastCheckpoint()
+        public long? GetLastCheckpoint(ISession session = null)
         {
-            using (var session = sessionFactory())
-            {
-                return session.Get<TState>(StateKey)?.Checkpoint;
-            }
+            using var sessionState = new SessionState(sessionFactory, session);
+            var checkpoint = sessionState.Session.Get<TState>(StateKey)?.Checkpoint;
+            sessionState.CommitIfMine();
+            return checkpoint;
         }
     }
 
@@ -341,7 +354,7 @@ namespace LiquidProjections.NHibernate
     /// Number of attempts that were made to project this batch of transactions (includes the one that raised the exception).
     /// </param>
     /// <param name="cancellationToken">
-    /// Is requested when the consuming system has canceled the subscription. 
+    /// Is requested when the consuming system has canceled the subscription.
     /// </param>
     public delegate Task<ExceptionResolution> HandleException(ProjectionException exception, int attempts, CancellationToken cancellationToken);
 
@@ -354,25 +367,25 @@ namespace LiquidProjections.NHibernate
         /// Ignore the exception and continue with the next batch of <see cref="Transaction"/>s.
         /// </summary>
         Ignore,
-        
+
         /// <summary>
         /// Abort the projection attempt and re-throw the original exception back to the caller.
         /// </summary>
         Abort,
-        
+
         /// <summary>
         /// Retry the entire batch of <see cref="Transaction"/>s.
         /// </summary>
         Retry,
-        
+
         /// <summary>
         /// Retry each <see cref="Transaction"/> one by one, in their own NHIbernate transaction.
-        /// This allows you to trace the exception to an individual exception. 
+        /// This allows you to trace the exception to an individual exception.
         /// </summary>
         RetryIndividual
     }
     /// <summary>
-    /// Defines the signature of a method that can be used to update the projection state as explained 
+    /// Defines the signature of a method that can be used to update the projection state as explained
     /// in <see cref="NHibernateProjector{TProjection,TKey,TState}.EnrichState"/>.
     /// </summary>
     public delegate void EnrichState<in TState>(TState state, Transaction transaction)

@@ -64,10 +64,13 @@ namespace LiquidProjections.NHibernate
                 }
                 else
                 {
-                    // Reattach it to the session
-                    // See also https://stackoverflow.com/questions/2932716/nhibernate-correct-way-to-reattach-cached-entity-to-different-session
-                    context.Session.Lock(projection, LockMode.None);
-                    await projector(projection).ConfigureAwait(false);
+                    if (Filter(projection))
+                    {
+                        // Reattach it to the session
+                        // See also https://stackoverflow.com/questions/2932716/nhibernate-correct-way-to-reattach-cached-entity-to-different-session
+                        context.Session.Lock(projection, LockMode.None);
+                        await projector(projection).ConfigureAwait(false);
+                    }
                 }
             }
         }
@@ -96,7 +99,7 @@ namespace LiquidProjections.NHibernate
 
         private async Task<bool> OnDelete(TKey key, NHibernateProjectionContext context)
         {
-            TProjection existingProjection = 
+            TProjection existingProjection =
                 await cache.Get(key, () => Task.FromResult(context.Session.Get<TProjection>(key)));
 
             if (existingProjection != null)

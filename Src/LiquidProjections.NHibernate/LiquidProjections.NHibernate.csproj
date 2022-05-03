@@ -8,25 +8,15 @@
     <DocumentationFile>bin\Debug\LiquidProjections.NHibernate.XML</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1571, 1591, 1570, 1573</NoWarn>
-    <LangVersion>7</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DocumentationFile>bin\Release\LiquidProjections.NHibernate.XML</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1571, 1591, 1570, 1573</NoWarn>
-    <LangVersion>7</LangVersion>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="C:\Users\nkeir\.nuget\packages\fluidcaching.sources\1.3.2\contentFiles\cs\any\FluidCaching.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\..\SharedAssemblyInfo.cs">
-      <Link>SharedAssemblyInfo.cs</Link>
-    </Compile>
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FluidCaching.Sources" Version="1.3.2" />
     <PackageReference Include="LiquidProjections" Version="3.2.0" />
-    <PackageReference Include="NHibernate" Version="5.3.10" />
+    <PackageReference Include="NHibernate" Version="5.3.11" />
   </ItemGroup>
 </Project>
