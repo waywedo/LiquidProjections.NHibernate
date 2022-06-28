@@ -144,7 +144,7 @@ namespace LiquidProjections.NHibernate
                 throw new ArgumentNullException(nameof(transactions));
             }
 
-            long? lastCheckpoint = GetLastCheckpoint(session);
+            long? lastCheckpoint = await GetLastCheckpoint(session, ct);
             IEnumerable<Batch<Transaction>> transactionBatches = transactions
                 .Where(t => (!lastCheckpoint.HasValue) || (t.Checkpoint > lastCheckpoint))
                 .InBatchesOf(BatchSize);
@@ -229,7 +229,7 @@ namespace LiquidProjections.NHibernate
                     || PersistStateBehavior == PersistStateBehavior.EveryBatch
                     || (dirty && PersistStateBehavior == PersistStateBehavior.DirtyBatch))
                 {
-                    StoreLastCheckpoint(sessionState.Session, batch.Last());
+                    await StoreLastCheckpoint(sessionState.Session, batch.Last(), ct);
                 }
 
                 await sessionState.Transaction.CommitAsync(ct).ConfigureAwait(false);
@@ -300,11 +300,11 @@ namespace LiquidProjections.NHibernate
             return dirty;
         }
 
-        private void StoreLastCheckpoint(ISession session, Transaction transaction)
+        private async Task StoreLastCheckpoint(ISession session, Transaction transaction, CancellationToken ct = default)
         {
             try
             {
-                TState existingState = session.Get<TState>(StateKey);
+                TState existingState = await session.GetAsync<TState>(StateKey, ct);
                 TState state = existingState ?? new TState { Id = StateKey };
                 state.Checkpoint = transaction.Checkpoint;
                 state.LastUpdateUtc = DateTime.UtcNow;
@@ -325,10 +325,10 @@ namespace LiquidProjections.NHibernate
         /// <summary>
         /// Determines the checkpoint of the last projected transaction.
         /// </summary>
-        public long? GetLastCheckpoint(ISession session = null)
+        public async Task<long?> GetLastCheckpoint(ISession session = null, CancellationToken ct = default)
         {
             using var sessionState = new SessionState(sessionFactory, session);
-            var checkpoint = sessionState.Session.Get<TState>(StateKey)?.Checkpoint;
+            var checkpoint = (await sessionState.Session.GetAsync<TState>(StateKey, ct))?.Checkpoint;
             sessionState.CommitIfMine();
             return checkpoint;
         }
