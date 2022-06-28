@@ -127,7 +127,7 @@ namespace LiquidProjections.NHibernate
         /// in batches of the configured size <see cref="BatchSize"/>. Should cancel its work
         /// when the <paramref name="ct"/> is triggered.
         /// </summary>
-        public Task Handle(IReadOnlyList<Transaction> transactions, CancellationToken ct = default)
+        public Task<bool> Handle(IReadOnlyList<Transaction> transactions, CancellationToken ct = default)
         {
             return Handle(transactions, null, ct);
         }
@@ -137,7 +137,7 @@ namespace LiquidProjections.NHibernate
         /// in batches of the configured size <see cref="BatchSize"/>. Should cancel its work
         /// when the <paramref name="ct"/> is triggered.
         /// </summary>
-        public async Task Handle(IReadOnlyList<Transaction> transactions, ISession session = null, CancellationToken ct = default)
+        public async Task<bool> Handle(IReadOnlyList<Transaction> transactions, ISession session = null, CancellationToken ct = default)
         {
             if (transactions == null)
             {
@@ -149,28 +149,32 @@ namespace LiquidProjections.NHibernate
                 .Where(t => (!lastCheckpoint.HasValue) || (t.Checkpoint > lastCheckpoint))
                 .InBatchesOf(BatchSize);
 
+            bool dirty = false;
             foreach (Batch<Transaction> batch in transactionBatches)
             {
-                await ProjectUnderPolicy(batch.ToList(), batch.IsLast, 0, session, ct).ConfigureAwait(false);
+                dirty |= await ProjectUnderPolicy(batch.ToList(), batch.IsLast, 0, session, ct).ConfigureAwait(false);
 
                 if (ct.IsCancellationRequested)
                 {
                     break;
                 }
             }
+
+            return dirty;
         }
 
-        private async Task ProjectUnderPolicy(IList<Transaction> batch, bool isLastBatchOfPage, int attempts,
+        private async Task<bool> ProjectUnderPolicy(IList<Transaction> batch, bool isLastBatchOfPage, int attempts,
             ISession session, CancellationToken ct)
         {
             bool individualRetry = (attempts > 0);
             bool retry = false;
+            bool dirty = false;
             do
             {
                 try
                 {
                     attempts++;
-                    await ProjectTransactionBatch(batch, isLastBatchOfPage || retry, session, ct).ConfigureAwait(false);
+                    dirty = await ProjectTransactionBatch(batch, isLastBatchOfPage || retry, session, ct).ConfigureAwait(false);
                     retry = false;
                 }
                 catch (ProjectionException exception)
@@ -192,9 +196,10 @@ namespace LiquidProjections.NHibernate
                                 throw new InvalidOperationException("You're already retrying individual transactions");
                             }
 
+                            dirty = false;
                             foreach (Transaction transaction in batch)
                             {
-                                await ProjectUnderPolicy(new[] { transaction }, true, attempts, session, ct).ConfigureAwait(false);
+                                dirty |= await ProjectUnderPolicy(new[] { transaction }, true, attempts, session, ct).ConfigureAwait(false);
                             }
 
                             break;
@@ -206,10 +211,14 @@ namespace LiquidProjections.NHibernate
                 }
             }
             while (retry);
+
+            return dirty;
         }
 
-        private async Task ProjectTransactionBatch(IList<Transaction> batch, bool isLastBatchOfPage, ISession session, CancellationToken ct)
+        private async Task<bool> ProjectTransactionBatch(IList<Transaction> batch, bool isLastBatchOfPage, ISession session, CancellationToken ct)
         {
+            bool dirty = false;
+
             try
             {
                 using var sessionState = new SessionState(sessionFactory, session)
@@ -217,7 +226,6 @@ namespace LiquidProjections.NHibernate
                     AlwaysDispose = true
                 };
 
-                bool dirty = false;
                 foreach (Transaction transaction in batch)
                 {
                     ct.ThrowIfCancellationRequested();
@@ -258,6 +266,8 @@ namespace LiquidProjections.NHibernate
                 projectionException.SetTransactionBatch(batch);
                 throw projectionException;
             }
+
+            return dirty;
         }
 
         private async Task<bool> ProjectTransaction(Transaction transaction, ISession session)
