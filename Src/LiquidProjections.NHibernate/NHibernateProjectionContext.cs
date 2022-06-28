@@ -2,7 +2,12 @@ using NHibernate;
 
 namespace LiquidProjections.NHibernate
 {
-    public sealed class NHibernateProjectionContext : ProjectionContext
+    public interface ITrackSkippedEvents
+    {
+        bool WasSkipped { get; set; }
+    }
+
+    public sealed class NHibernateProjectionContext : ProjectionContext, ITrackSkippedEvents
     {
         private bool wasHandled;
 
@@ -17,5 +22,10 @@ namespace LiquidProjections.NHibernate
             get => wasHandled;
             set => wasHandled |= value;
         }
+
+        /// <summary>
+        /// Indicates if an event was skipped by a When clause which should treat the event as unhandled.
+        /// </summary>
+        public bool WasSkipped { get; set; }
     }
 }

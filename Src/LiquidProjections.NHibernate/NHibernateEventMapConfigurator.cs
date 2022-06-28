@@ -120,7 +120,9 @@ namespace LiquidProjections.NHibernate
                 await child.ProjectEvent(anEvent, context).ConfigureAwait(false);
             }
 
-            context.WasHandled = await map.Handle(anEvent, context).ConfigureAwait(false);
+            context.WasSkipped = false;
+            context.WasHandled = (await map.Handle(anEvent, context).ConfigureAwait(false))
+                && !context.WasSkipped;
         }
     }
 }
