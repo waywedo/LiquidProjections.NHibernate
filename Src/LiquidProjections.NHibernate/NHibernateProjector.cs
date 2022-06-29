@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -295,19 +296,30 @@ namespace LiquidProjections.NHibernate
                 {
                     projectionException.TransactionId = transaction.Id;
                     projectionException.CurrentEvent = eventEnvelope;
+                    AddExceptionData(projectionException, transaction.Headers);
                     throw;
                 }
                 catch (Exception exception)
                 {
-                    throw new ProjectionException("Projector failed to project an event.", exception)
+                    var projectionException = new ProjectionException("Projector failed to project an event.", exception)
                     {
                         TransactionId = transaction.Id,
                         CurrentEvent = eventEnvelope
                     };
+                    AddExceptionData(projectionException, transaction.Headers);
+                    throw projectionException;
                 }
             }
 
             return dirty;
+        }
+
+        private static void AddExceptionData(ProjectionException exception, IDictionary<string, object> data)
+        {
+            foreach (var kvp in data)
+            {
+                exception.Data.Add(kvp.Key, kvp.Value);
+            }
         }
 
         private async Task StoreLastCheckpoint(ISession session, Transaction transaction, CancellationToken ct = default)
