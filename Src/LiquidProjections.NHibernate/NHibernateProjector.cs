@@ -333,7 +333,7 @@ namespace LiquidProjections.NHibernate
 
                 if (existingState == null)
                 {
-                    session.Save(state);
+                    await session.SaveAsync(state, ct).ConfigureAwait(false);
                 }
 
                 EnrichState(state, transaction);

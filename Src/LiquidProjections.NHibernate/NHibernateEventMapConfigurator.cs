@@ -50,7 +50,7 @@ namespace LiquidProjections.NHibernate
 
         private async Task OnCreate(TKey key, NHibernateProjectionContext context, Func<TProjection, Task> projector, Func<TProjection, bool> shouldOverwrite)
         {
-            TProjection projection = await cache.Get(key, () => Task.FromResult(context.Session.Get<TProjection>(key)));
+            TProjection projection = await cache.Get(key, async () => await context.Session.GetAsync<TProjection>(key));
             if ((projection == null) || shouldOverwrite(projection))
             {
                 if (projection == null)
@@ -59,7 +59,7 @@ namespace LiquidProjections.NHibernate
                     setIdentity(projection, key);
                     await projector(projection).ConfigureAwait(false);
 
-                    context.Session.Save(projection);
+                    await context.Session.SaveAsync(projection).ConfigureAwait(false);
                     cache.Add(projection);
                 }
                 else
@@ -68,7 +68,7 @@ namespace LiquidProjections.NHibernate
                     {
                         // Reattach it to the session
                         // See also https://stackoverflow.com/questions/2932716/nhibernate-correct-way-to-reattach-cached-entity-to-different-session
-                        context.Session.Lock(projection, LockMode.None);
+                        await context.Session.LockAsync(projection, LockMode.None).ConfigureAwait(false);
                         await projector(projection).ConfigureAwait(false);
                     }
                 }
@@ -77,21 +77,21 @@ namespace LiquidProjections.NHibernate
 
         private async Task OnUpdate(TKey key, NHibernateProjectionContext context, Func<TProjection, Task> projector, Func<bool> createIfMissing)
         {
-            TProjection projection = await cache.Get(key, () => Task.FromResult(context.Session.Get<TProjection>(key)));
+            TProjection projection = await cache.Get(key, async () => await context.Session.GetAsync<TProjection>(key));
             if ((projection == null) && createIfMissing())
             {
                 projection = new TProjection();
                 setIdentity(projection, key);
 
                 await projector(projection).ConfigureAwait(false);
-                context.Session.Save(projection);
+                await context.Session.SaveAsync(projection).ConfigureAwait(false);
                 cache.Add(projection);
             }
             else
             {
                 if (projection != null && Filter(projection))
                 {
-                    context.Session.Lock(projection, LockMode.None);
+                    await context.Session.LockAsync(projection, LockMode.None).ConfigureAwait(false);
                     await projector(projection).ConfigureAwait(false);
                 }
             }
@@ -100,11 +100,11 @@ namespace LiquidProjections.NHibernate
         private async Task<bool> OnDelete(TKey key, NHibernateProjectionContext context)
         {
             TProjection existingProjection =
-                await cache.Get(key, () => Task.FromResult(context.Session.Get<TProjection>(key)));
+                await cache.Get(key, async () => await context.Session.GetAsync<TProjection>(key));
 
             if (existingProjection != null)
             {
-                context.Session.Delete(existingProjection);
+                await context.Session.DeleteAsync(existingProjection).ConfigureAwait(false);
                 cache.Remove(key);
 
                 return true;
