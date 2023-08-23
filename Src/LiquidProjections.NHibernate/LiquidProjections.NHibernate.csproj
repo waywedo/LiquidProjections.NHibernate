@@ -4,7 +4,7 @@
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Nullable>disable</Nullable>
-		<Version>1.0.5</Version>
+		<Version>1.0.6</Version>
 		<PackageId>waywedo.$(AssemblyName)</PackageId>
 		<Authors>Nathan Keir, Dennis Doomen</Authors>
 		<Company>Way We Do</Company>

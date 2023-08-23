@@ -1,10 +1,10 @@
+using NHibernate;
+using NHibernate.Engine;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using NHibernate;
 
 namespace LiquidProjections.NHibernate
 {
@@ -104,6 +104,14 @@ namespace LiquidProjections.NHibernate
         /// Is called within the scope of the NHibernate transaction that is created by <see cref="Handle(IReadOnlyList{Transaction}, ISession, CancellationToken)"/>.
         /// </remarks>
         public EnrichState<TState> EnrichState { get; set; } = (state, transaction) => { };
+
+        /// <summary>
+        /// Allows blocking of entities which are going to be inserted.
+        /// </summary>
+        /// <remarks>
+        /// Entities returned from this function will not be inserted.
+        /// </remarks>
+        public ReviewInserts ReviewInserts { get; set; } = (insertedEntities) => null;
 
         /// <summary>
         /// A cache that can be used to avoid loading projections from the database.
@@ -238,8 +246,10 @@ namespace LiquidProjections.NHibernate
                     || PersistStateBehavior == PersistStateBehavior.EveryBatch
                     || (dirty && PersistStateBehavior == PersistStateBehavior.DirtyBatch))
                 {
-                    await StoreLastCheckpoint(sessionState.Session, batch.Last(), ct);
+                    await StoreLastCheckpoint(sessionState.Session, batch.Last(), ct).ConfigureAwait(false);
                 }
+
+                await ReviewInsertedEntities(sessionState.Session, ct).ConfigureAwait(false);
 
                 await sessionState.Transaction.CommitAsync(ct).ConfigureAwait(false);
             }
@@ -269,6 +279,29 @@ namespace LiquidProjections.NHibernate
             }
 
             return dirty;
+        }
+
+        private async Task ReviewInsertedEntities(ISession session, CancellationToken ct)
+        {
+            var sessionImpl = session.GetSessionImplementation();
+            var persistenceContext = sessionImpl.PersistenceContext;
+
+            var insertedEntities = persistenceContext.EntityEntries.Values
+                .Cast<EntityEntry>()
+                .Where(e => !e.ExistsInDatabase)
+                .Select(e => persistenceContext.GetEntity(e.EntityKey))
+                .ToList();
+
+            var blockedInserts = ReviewInserts(insertedEntities);
+            if (blockedInserts == null)
+            {
+                return;
+            }
+
+            foreach (var entity in blockedInserts)
+            {
+                await session.DeleteAsync(entity, ct).ConfigureAwait(false);
+            }
         }
 
         private async Task<bool> ProjectTransaction(Transaction transaction, ISession session)
@@ -412,4 +445,11 @@ namespace LiquidProjections.NHibernate
     /// </summary>
     public delegate void EnrichState<in TState>(TState state, Transaction transaction)
         where TState : IProjectorState;
+
+    /// <summary>
+    /// Defines the signature of a method that can be used to block entity inserts.
+    /// </summary>
+    /// <param name="insertedEntities">A list of entities being inserted in this transaction.</param>
+    /// <returns>A list of entities which should not be inserted.</returns>
+    public delegate IEnumerable<object> ReviewInserts(IList<object> insertedEntities);
 }
